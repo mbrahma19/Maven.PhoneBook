@@ -1,6 +1,9 @@
 package com.zipcodewilmington.phonebook;
 
+import java.sql.SQLOutput;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -8,12 +11,17 @@ import java.util.TreeMap;
  */
 public class PhoneBook {
 
-    private static TreeMap<String, ArrayList> phonebook = new TreeMap<String, ArrayList>();
+    private static TreeMap<String, ArrayList<String>> phonebook = new TreeMap<String, ArrayList<String>>();
 
-    public PhoneBook(){
+    public PhoneBook() {
 
     }
 
+    /**
+     *
+     * @param name
+     * @return
+     */
     private Boolean hasEntry(String name){
         if(phonebook.containsKey(name)){
             return true;
@@ -22,15 +30,24 @@ public class PhoneBook {
         }
     }
 
+    /**
+     *
+     * @param name
+     * @param phoneNumbers
+     */
     public void newPhoneBookEntry(String name, ArrayList<String> phoneNumbers){
 
-        if(!hasEntry(name)){
+        if(hasEntry(name)==false){
             phonebook.put(name, phoneNumbers);
         }else {
             System.out.println("Cannot add a new entry for " + name + ". Entry already exists");
         }
     }
 
+    /**
+     *
+     * @param name
+     */
     public void removeRecord(String name){
         if(hasEntry(name)){
             phonebook.remove(name);
@@ -39,10 +56,20 @@ public class PhoneBook {
         }
     }
 
+    /**
+     * Returns the ArrayList related to the inputted key(name) in the phonebook map
+     * @param name
+     * @return ArrayList<String
+     */
     private ArrayList<String> getArrayListFor(String name){
         return phonebook.get(name);
     }
 
+    /**
+     * Methods adds a new number to the existing
+     * @param name
+     * @param phoneNumber
+     */
     public void addNewNumber(String name, String phoneNumber){
 
         if(hasEntry(name)){
@@ -58,16 +85,44 @@ public class PhoneBook {
         }
     }
 
+    /**
+     *
+     * @param name
+     * @return
+     */
 
     public String lookup(String name){
-        return String.format("The phone numbers for %s are %s", name, getArrayListFor(name));
+
+        if(hasEntry(name)==true) {
+            return getArrayListFor(name).toString();
+        }else{return null;}
     }
 
+    /**
+     *
+     * @param phoneNumber
+     * @return
+     */
     public String reverseLookup(String phoneNumber){
+        String result = "";
+        Set<Map.Entry<String,ArrayList<String>>> setMap = getSetVersionOfPhonebook();
 
-        return null;
+        for(Map.Entry entry : setMap){
+            ArrayList<String> currList = (ArrayList<String>)entry.getValue();
+            if (currList.contains(phoneNumber)) {
 
+                result = String.valueOf(entry.getKey());
+
+            }
+        }
+        return result;
     }
+
+    /**
+     *
+     * @param name
+     * @param phoneNumberToRemove
+     */
 
     public void removePhoneNumber(String name, String phoneNumberToRemove){
 
@@ -90,16 +145,47 @@ public class PhoneBook {
 
     }
 
+    /**
+     *
+     * @return
+     */
+
     public String listNamesAndNumbers(){
         String finalList = "";
+
+        Set<Map.Entry<String,ArrayList<String>>> setMap = getSetVersionOfPhonebook();
+
+        for(Map.Entry entry : setMap){
+           ArrayList<String> currList = (ArrayList<String>)entry.getValue();
+            String currKey = String.valueOf(entry.getKey());
+            finalList = finalList + currKey + " " + currList.toString() + "\n";
+        }
+
         return finalList;
     }
 
+    /**
+     *
+     * @return
+     */
     public String listNames(){
+        String finalList = "";
+        Set<Map.Entry<String,ArrayList<String>>> setMap = getSetVersionOfPhonebook();
 
-        return null;
+        for(Map.Entry entry : setMap){
+            String currKey = String.valueOf(entry.getKey());
+            finalList = finalList + currKey + "\n";
+        }
+
+        return finalList;
     }
 
+    private Set<Map.Entry<String, ArrayList<String>>> getSetVersionOfPhonebook(){
+        return phonebook.entrySet();
+    }
+    /**
+     *
+     */
     public void display(){
         System.out.println(listNamesAndNumbers());
     }
